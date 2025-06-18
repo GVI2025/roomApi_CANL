@@ -22,3 +22,10 @@ def check_before_reservation(db:Session, salle_id:str, date: date, heure: time):
                   .filter(ReservationModel.heure == heure)
                   .first())
     return query
+
+def get_reservation_by_id(db: Session, idReservation: str):
+    return db.query(ReservationModel).filter(ReservationModel.id == idReservation).first()
+
+def delete_reservation(db: Session, reservation: ReservationModel):
+    db.delete(reservation)
+    db.commit()

@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from app.main import app
 
 client = TestClient(app)
@@ -90,3 +90,23 @@ def test_create_reservation_invalid():
     }
     response = client.post("/reservations/", json=payload)
     assert response.status_code == 422
+
+def test_delete_reservation_success():
+    reservation_id = "fake-id"
+    mock_reservation = MagicMock()
+
+    with patch("app.routers.reservation.get_reservation_by_id", return_value=mock_reservation), \
+         patch("app.routers.reservation.delete_reservation") as mock_delete:
+        response = client.delete(f"/reservations/{reservation_id}")
+        assert response.status_code == 204
+        called_args = mock_delete.call_args[0]
+        # Vérifie que le deuxième argument est bien la réservation mockée
+        assert called_args[1] == mock_reservation
+
+def test_delete_reservation_not_found():
+    reservation_id = "not-found"
+
+    with patch("app.routers.reservation.get_reservation_by_id", return_value=None):
+        response = client.delete(f"/reservations/{reservation_id}")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Réservation non trouvée"
