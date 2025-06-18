@@ -75,3 +75,24 @@ def test_list_salles_empty():
         data = response.json()
         assert isinstance(data, list)
         assert len(data) == 0
+
+def test_delete_salle_success():
+    salle_id = "fake-id"
+
+    # Mock la fonction get_salle_by_id pour renvoyer un objet simulé
+    mock_salle = MagicMock()
+    with patch("app.routers.salle.get_salle_by_id", return_value=mock_salle), \
+         patch("app.routers.salle.delete_salle") as mock_delete:
+        response = client.delete(f"/salles/{salle_id}")
+        
+        assert response.status_code == 204
+        mock_delete.assert_called_once_with(mock_salle)
+
+def test_delete_salle_not_found():
+    salle_id = "non-existent-id"
+
+    # Mock get_salle_by_id pour renvoyer None (pas trouvé)
+    with patch("app.routers.salle.get_salle_by_id", return_value=None):
+        response = client.delete(f"/salles/{salle_id}")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Salle non trouvée"

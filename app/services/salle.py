@@ -25,3 +25,10 @@ def create_salle(db: Session, salle: SalleCreate) -> SalleModel:
     except SQLAlchemyError as e:
         db.rollback()
         raise RuntimeError("Erreur lors de la création de la salle.") from e
+
+def get_salle_by_id(db: Session, salle_id: str):
+    return db.query(SalleModel).filter(SalleModel.id == salle_id).first()
+
+def delete_salle(db: Session, salle: SalleModel):
+    db.delete(salle)
+    db.commit()
