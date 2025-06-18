@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.schemas.salle import SalleRead, SalleCreate, Salle, SalleUpdate
-from app.services.salle import get_all_salles, create_salle, update_salle, get_salle_by_id, delete_salle
+from app.services.salle import get_all_salles, create_salle, update_salle, get_salle_by_id, delete_salle, \
+    get_salle_dispo
 
 from app.database.database import get_db
 
@@ -12,6 +13,10 @@ router = APIRouter(prefix="/salles", tags=["Salles"])
 @router.get("/", response_model=List[SalleRead])
 def list_salles(db: Session = Depends(get_db)):
     return get_all_salles(db)
+
+@router.get("/disponibles/", response_model=List[SalleRead])
+def list_salles(db: Session = Depends(get_db)):
+    return get_salle_dispo(db)
 
 @router.post("/", response_model=Salle)
 def create_new_salle(salle: SalleCreate, db: Session = Depends(get_db)):
