@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -21,3 +21,11 @@ def create_reservation(reservationModel: ReservationCreate, db: Session = Depend
     if existing:
         raise HTTPException(status_code=400, detail="Reservation Impossible, Une réservation pour cette salle existe déjà")
     return reservation_service.create_reservation(db, reservationModel)
+
+@router.delete("/{idReservation}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_reservation(idReservation: str, db: Session = Depends(get_db)):
+    reservation = reservation_service.get_reservation_by_id(db, idReservation)
+    if not reservation:
+        raise HTTPException(status_code=404, detail="Réservation non trouvée")
+    reservation_service.delete_reservation(db, reservation)
+    return None  # 204 No Content ne retourne rien
