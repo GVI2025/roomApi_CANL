@@ -53,7 +53,7 @@ def patch_salle(idSalle: str, salle_update: SalleUpdate, db: Session = Depends(g
             detail="Erreur inconnue lors de la modification de la salle."
         )
 
- @router.delete("/{idSalle}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{idSalle}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_salle_route(idSalle: str, db: Session = Depends(get_db)):
     salle = get_salle_by_id(db, idSalle)
     if not salle:
