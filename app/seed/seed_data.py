@@ -1,4 +1,3 @@
-
 from app.database.database import SessionLocal
 from app.models.salle import Salle
 from app.models.reservation import Reservation
@@ -21,30 +20,35 @@ def seed():
                 nom='Cafet',
                 capacite=30,
                 localisation='RDC',
+                disponible=True
             ),
             Salle(
                 id='da3d5688-0748-4461-ab27-5932b707d18f',
                 nom='IG104',
                 capacite=20,
                 localisation='1er etage',
+                disponible=True
             ),
             Salle(
                 id='620d48b8-48ac-4353-9fa6-be268263c56c',
                 nom='IG202',
                 capacite=20,
                 localisation='2eme etage',
+                disponible=False
             ),
             Salle(
                 id='5382f5bb-3b3a-4c11-886b-c3264eb441c5',
                 nom='IG305',
                 capacite=30,
                 localisation='3eme etage',
+                disponible=True
             ),
             Salle(
                 id='7a855ef8-ed39-4c8b-9cfa-6696e48a1aa7',
                 nom='IG301',
                 capacite=50,
                 localisation='3eme etage',
+                disponible=False
             )
         ]
 

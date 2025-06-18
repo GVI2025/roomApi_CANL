@@ -10,7 +10,8 @@ def salle_payload():
     return {
         "nom": "Salle Test",
         "capacite": 40,
-        "localisation": "Bâtiment Test"
+        "localisation": "Bâtiment Test",
+        "disponible": True
     }
 
 def test_create_salle_success(salle_payload):
@@ -18,7 +19,8 @@ def test_create_salle_success(salle_payload):
         "id": "fake-id",
         "nom": salle_payload["nom"],
         "capacite": salle_payload["capacite"],
-        "localisation": salle_payload["localisation"]
+        "localisation": salle_payload["localisation"],
+        "disponible": salle_payload["disponible"]
     }
     with patch("app.routers.salle.create_salle", return_value=mock_salle):
         response = client.post("/salles/", json=salle_payload)
@@ -27,6 +29,7 @@ def test_create_salle_success(salle_payload):
         assert data["nom"] == salle_payload["nom"]
         assert data["capacite"] == salle_payload["capacite"]
         assert data["localisation"] == salle_payload["localisation"]
+        assert data["disponible"] == salle_payload["disponible"]
         assert "id" in data
 
 def test_create_salle_conflict(salle_payload):
@@ -50,13 +53,15 @@ def test_list_salles_success():
             "id": "id1",
             "nom": "Salle A",
             "capacite": 50,
-            "localisation": "Bâtiment A"
+            "localisation": "Bâtiment A",
+            "disponible": True
         },
         {
             "id": "id2",
             "nom": "Salle B",
             "capacite": 30,
-            "localisation": "Bâtiment B"
+            "localisation": "Bâtiment B",
+            "disponible": False
         }
     ]
     with patch("app.routers.salle.get_all_salles", return_value=mock_salles):
@@ -66,7 +71,9 @@ def test_list_salles_success():
         assert isinstance(data, list)
         assert len(data) == 2
         assert data[0]["nom"] == "Salle A"
+        assert data[0]["disponible"] is True
         assert data[1]["nom"] == "Salle B"
+        assert data[1]["disponible"] is False
 
 def test_list_salles_empty():
     with patch("app.routers.salle.get_all_salles", return_value=[]):
@@ -103,13 +110,15 @@ def test_patch_salle_success():
     update_payload = {
         "nom": "Salle Modifiée",
         "capacite": 60,
-        "localisation": "Bâtiment Modifié"
+        "localisation": "Bâtiment Modifié",
+        "disponible": False
     }
     mock_salle = {
         "id": salle_id,
         "nom": update_payload["nom"],
         "capacite": update_payload["capacite"],
-        "localisation": update_payload["localisation"]
+        "localisation": update_payload["localisation"],
+        "disponible": update_payload["disponible"]
     }
     with patch("app.routers.salle.update_salle", return_value=mock_salle):
         response = client.patch(f"/salles/{salle_id}", json=update_payload)
@@ -119,6 +128,7 @@ def test_patch_salle_success():
         assert data["nom"] == update_payload["nom"]
         assert data["capacite"] == update_payload["capacite"]
         assert data["localisation"] == update_payload["localisation"]
+        assert data["disponible"] == update_payload["disponible"]
 
 def test_patch_salle_not_found():
     salle_id = "notfound"
