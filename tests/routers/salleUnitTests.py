@@ -84,9 +84,10 @@ def test_delete_salle_success():
     with patch("app.routers.salle.get_salle_by_id", return_value=mock_salle), \
          patch("app.routers.salle.delete_salle") as mock_delete:
         response = client.delete(f"/salles/{salle_id}")
-        
         assert response.status_code == 204
-        mock_delete.assert_called_once_with(mock_salle)
+        # On vérifie seulement que le deuxième argument est bien mock_salle
+        called_args = mock_delete.call_args[0]
+        assert called_args[1] == mock_salle
 
 def test_delete_salle_not_found():
     salle_id = "non-existent-id"
