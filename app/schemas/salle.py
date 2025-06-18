@@ -27,4 +27,4 @@ class Salle(SalleBase):
     id: str
 
     class Config:
-        rom_attributes = True
+        from_attributes = True
