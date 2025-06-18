@@ -15,7 +15,3 @@ class Reservation(Base):
     heure = Column(Time, nullable=False)
 
     salle = relationship("Salle")
-
-
-def salle_id():
-    return None
