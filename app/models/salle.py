@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, UniqueConstraint
+from sqlalchemy import Column, String, Integer, UniqueConstraint, Boolean
 from uuid import uuid4
 
 from app.database.database import Base
@@ -11,3 +11,4 @@ class Salle(Base):
     nom = Column(String, nullable=False)
     capacite = Column(Integer)
     localisation = Column(String)
+    disponible = Column(Boolean, default=True)  # 1 pour disponible, 0 pour indisponible
