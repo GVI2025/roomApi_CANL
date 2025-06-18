@@ -95,4 +95,27 @@ alembic/               # Alembic migrations
 These scripts are defined in `pyproject.toml`:
 * `poetry run test`: Run tests
 * `poetry run migrate`: Apply Alembic migrations
-# roomApi_CANL
+
+---
+
+## Mettre à jour la base de données après ajout du champ `commentaire`
+
+Si vous avez ajouté le champ `commentaire` dans le modèle `Reservation`, vous devez mettre à jour la base de données.  
+Voici comment faire avec Alembic :
+
+1. Générez une nouvelle migration :
+   ```bash
+   alembic revision --autogenerate -m "Ajout du champ commentaire dans reservations"
+   ```
+
+2. Vérifiez le fichier de migration généré dans le dossier `alembic/versions/` et assurez-vous qu'il contient une ligne similaire à :
+   ```python
+   op.add_column('reservations', sa.Column('commentaire', sa.String(), nullable=True))
+   ```
+
+3. Appliquez la migration :
+   ```bash
+   alembic upgrade head
+   ```
+
+Votre base de données est maintenant à jour avec le champ `commentaire` dans la table `reservations`.

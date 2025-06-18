@@ -1,14 +1,15 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import date, time
 
 from sqlalchemy import Enum
-
 
 class ReservationBase(BaseModel):
     salle_id: str
     utilisateur: str
     date: date
     heure: time
+    commentaire: Optional[str] = None
 
 class ReservationRead(ReservationBase):
     id: str
@@ -25,5 +26,3 @@ class ReservationUpdate(ReservationBase):
 
     class Config:
         orm_mode = True
-
-
