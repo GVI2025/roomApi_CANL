@@ -76,6 +76,28 @@ def test_list_salles_empty():
         assert isinstance(data, list)
         assert len(data) == 0
 
+def test_delete_salle_success():
+    salle_id = "fake-id"
+
+    # Mock la fonction get_salle_by_id pour renvoyer un objet simulé
+    mock_salle = MagicMock()
+    with patch("app.routers.salle.get_salle_by_id", return_value=mock_salle), \
+         patch("app.routers.salle.delete_salle") as mock_delete:
+        response = client.delete(f"/salles/{salle_id}")
+        assert response.status_code == 204
+        # On vérifie seulement que le deuxième argument est bien mock_salle
+        called_args = mock_delete.call_args[0]
+        assert called_args[1] == mock_salle
+
+def test_delete_salle_not_found():
+    salle_id = "non-existent-id"
+
+    # Mock get_salle_by_id pour renvoyer None (pas trouvé)
+    with patch("app.routers.salle.get_salle_by_id", return_value=None):
+        response = client.delete(f"/salles/{salle_id}")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Salle non trouvée"
+
 def test_patch_salle_success():
     salle_id = "id1"
     update_payload = {
