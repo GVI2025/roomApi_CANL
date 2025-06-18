@@ -75,3 +75,54 @@ def test_list_salles_empty():
         data = response.json()
         assert isinstance(data, list)
         assert len(data) == 0
+
+def test_patch_salle_success():
+    salle_id = "id1"
+    update_payload = {
+        "nom": "Salle Modifiée",
+        "capacite": 60,
+        "localisation": "Bâtiment Modifié"
+    }
+    mock_salle = {
+        "id": salle_id,
+        "nom": update_payload["nom"],
+        "capacite": update_payload["capacite"],
+        "localisation": update_payload["localisation"]
+    }
+    with patch("app.routers.salle.update_salle", return_value=mock_salle):
+        response = client.patch(f"/salles/{salle_id}", json=update_payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == salle_id
+        assert data["nom"] == update_payload["nom"]
+        assert data["capacite"] == update_payload["capacite"]
+        assert data["localisation"] == update_payload["localisation"]
+
+def test_patch_salle_not_found():
+    salle_id = "notfound"
+    update_payload = {
+        "nom": "Salle Inexistante"
+    }
+    with patch("app.routers.salle.update_salle", side_effect=ValueError("Salle non trouvée.")):
+        response = client.patch(f"/salles/{salle_id}", json=update_payload)
+        assert response.status_code == 404
+        assert "non trouvée" in response.json()["detail"]
+
+def test_patch_salle_conflict():
+    salle_id = "id1"
+    update_payload = {
+        "nom": "Salle Déjà Existante"
+    }
+    with patch("app.routers.salle.update_salle", side_effect=ValueError("Une salle avec ce nom existe déjà.")):
+        response = client.patch(f"/salles/{salle_id}", json=update_payload)
+        assert response.status_code == 409
+        assert "existe déjà" in response.json()["detail"]
+
+def test_patch_salle_invalid():
+    salle_id = "id1"
+    update_payload = {
+        "nom": "",
+        "capacite": -10
+    }
+    response = client.patch(f"/salles/{salle_id}", json=update_payload)
+    assert response.status_code == 422
