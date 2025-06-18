@@ -3,6 +3,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.models.salle import Salle as SalleModel
 from app.schemas.salle import SalleCreate, SalleUpdate
 
+def get_all_salles(db: Session):
+    return db.query(SalleModel).all()
+
 def create_salle(db: Session, salle: SalleCreate) -> SalleModel:
     # Vérifier si une salle avec le même nom existe déjà
     existing = db.query(SalleModel).filter(SalleModel.nom == salle.nom).first()
