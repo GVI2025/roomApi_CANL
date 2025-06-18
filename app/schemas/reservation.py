@@ -13,10 +13,6 @@ class ReservationBase(BaseModel):
 class ReservationRead(ReservationBase):
     id: str
 
-    class Config:
-        orm_mode = True
-
-
 class ReservationStatus(str, Enum):
     LIBRE = "Salle Libre"
     RESERVE = "Salle Réservé"
@@ -26,4 +22,8 @@ class ReservationCreate(ReservationBase):
 
 class ReservationUpdate(ReservationBase):
     pass
+
+    class Config:
+        orm_mode = True
+
 

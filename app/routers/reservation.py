@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.services import reservation as reservation_service
-from app.schemas.reservation import ReservationRead
+from app.schemas.reservation import ReservationRead,ReservationCreate
 
 from app.database.database import get_db
 
