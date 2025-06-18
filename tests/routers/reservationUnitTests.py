@@ -12,14 +12,16 @@ def test_list_reservations_success():
             "salle_id": "id1",
             "date": "2024-06-01",
             "heure": "09:00:00",
-            "utilisateur": "user1"
+            "utilisateur": "user1",
+            "commentaire": "Réunion importante"
         },
         {
             "id": "res2",
             "salle_id": "id2",
             "date": "2024-06-02",
             "heure": "11:00:00",
-            "utilisateur": "user2"
+            "utilisateur": "user2",
+            "commentaire": None
         }
     ]
     with patch("app.services.reservation.get_reservations", return_value=mock_reservations):
@@ -29,7 +31,9 @@ def test_list_reservations_success():
         assert isinstance(data, list)
         assert len(data) == 2
         assert data[0]["id"] == "res1"
+        assert data[0]["commentaire"] == "Réunion importante"
         assert data[1]["id"] == "res2"
+        assert data[1]["commentaire"] is None
 
 def test_list_reservations_empty():
     with patch("app.services.reservation.get_reservations", return_value=[]):
@@ -44,7 +48,8 @@ def test_create_reservation_success():
         "salle_id": "id1",
         "utilisateur": "user1",
         "date": "2024-06-01",
-        "heure": "09:00:00"
+        "heure": "09:00:00",
+        "commentaire": "Réunion importante"
     }
     mock_reservation = {
         "id": "res1",
@@ -60,13 +65,15 @@ def test_create_reservation_success():
         assert data["utilisateur"] == payload["utilisateur"]
         assert data["date"] == payload["date"]
         assert data["heure"] == payload["heure"]
+        assert data["commentaire"] == payload["commentaire"]
 
 def test_create_reservation_conflict():
     payload = {
         "salle_id": "id1",
         "utilisateur": "user1",
         "date": "2024-06-01",
-        "heure": "09:00:00"
+        "heure": "09:00:00",
+        "commentaire": "Tentative double réservation"
     }
     with patch("app.services.reservation.check_before_reservation", return_value=True):
         response = client.post("/reservations/", json=payload)
@@ -78,7 +85,8 @@ def test_create_reservation_invalid():
         "salle_id": "",
         "utilisateur": "",
         "date": "invalid-date",
-        "heure": "invalid-heure"
+        "heure": "invalid-heure",
+        "commentaire": "Texte"
     }
     response = client.post("/reservations/", json=payload)
     assert response.status_code == 422
