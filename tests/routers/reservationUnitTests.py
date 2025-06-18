@@ -38,3 +38,47 @@ def test_list_reservations_empty():
         data = response.json()
         assert isinstance(data, list)
         assert len(data) == 0
+
+def test_create_reservation_success():
+    payload = {
+        "salle_id": "id1",
+        "utilisateur": "user1",
+        "date": "2024-06-01",
+        "heure": "09:00:00"
+    }
+    mock_reservation = {
+        "id": "res1",
+        **payload
+    }
+    with patch("app.services.reservation.check_before_reservation", return_value=None), \
+         patch("app.services.reservation.create_reservation", return_value=mock_reservation):
+        response = client.post("/reservations/", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["id"] == "res1"
+        assert data["salle_id"] == payload["salle_id"]
+        assert data["utilisateur"] == payload["utilisateur"]
+        assert data["date"] == payload["date"]
+        assert data["heure"] == payload["heure"]
+
+def test_create_reservation_conflict():
+    payload = {
+        "salle_id": "id1",
+        "utilisateur": "user1",
+        "date": "2024-06-01",
+        "heure": "09:00:00"
+    }
+    with patch("app.services.reservation.check_before_reservation", return_value=True):
+        response = client.post("/reservations/", json=payload)
+        assert response.status_code == 400
+        assert "Impossible" in response.json()["detail"]
+
+def test_create_reservation_invalid():
+    payload = {
+        "salle_id": "",
+        "utilisateur": "",
+        "date": "invalid-date",
+        "heure": "invalid-heure"
+    }
+    response = client.post("/reservations/", json=payload)
+    assert response.status_code == 422
