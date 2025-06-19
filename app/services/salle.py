@@ -4,7 +4,7 @@ from app.models.salle import Salle as SalleModel
 from app.schemas.salle import SalleCreate, SalleUpdate
 
 def get_all_salles(db: Session):
-    return db.query(SalleModel).all
+    return db.query(SalleModel).all()
 
 def get_salle_dispo(db: Session):
     return db.query(SalleModel).filter(SalleModel.disponible == True)

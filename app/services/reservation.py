@@ -1,9 +1,9 @@
-from sqlalchemy.orm import Session
-from app.models import Reservation as ReservationModel
 from datetime import date, time
+from sqlalchemy import extract
 from sqlalchemy.orm import Session
 from app.models.reservation import Reservation as ReservationModel
 from app.schemas.reservation import ReservationCreate
+
 
 def get_reservations(db: Session):
     return db.query(ReservationModel).all()
@@ -16,11 +16,11 @@ def create_reservation(db: Session, reservation: ReservationCreate):
     return db_reservation
 
 def check_before_reservation(db:Session, salle_id:str, date: date, heure: time):
-    query = db.query(ReservationModel)
-    query = (query.filter(ReservationModel.salle_id == salle_id)
-                  .filter(ReservationModel.date == date)
-                  .filter(ReservationModel.heure == heure)
-                  .first())
+    query = db.query(ReservationModel).filter(
+        ReservationModel.salle_id == salle_id,
+        ReservationModel.date == date,
+        extract('hour', ReservationModel.heure) == heure.hour  # ignore les minutes
+    ).first()
     return query
 
 def get_reservation_by_id(db: Session, idReservation: str):
